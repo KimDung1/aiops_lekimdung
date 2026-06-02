@@ -1,0 +1,85 @@
+{
+  "total_logs": 15386,
+  "total_templates": 13,
+  "new_template_events": 13,
+  "anomaly_windows": 24,
+  "top10": [
+    {
+      "rank": 1,
+      "template": "Cache <*> for key cache:<NUM>",
+      "count": 2155
+    },
+    {
+      "rank": 2,
+      "template": "ERROR connection refused to db<NUM>.internal:<NUM> retry=<NUM>",
+      "count": 1217
+    },
+    {
+      "rank": 3,
+      "template": "WARN slow query <NUM>ms exceeds threshold <NUM>ms",
+      "count": 1214
+    },
+    {
+      "rank": 4,
+      "template": "CRITICAL out of memory killing process <NUM>",
+      "count": 1203
+    },
+    {
+      "rank": 5,
+      "template": "ERROR disk write failed on <*> errno=<NUM>",
+      "count": 1183
+    },
+    {
+      "rank": 6,
+      "template": "Scheduler job job_<NUM> completed in <NUM>s",
+      "count": 1106
+    },
+    {
+      "rank": 7,
+      "template": "Scheduler job job_<NUM> started",
+      "count": 1103
+    },
+    {
+      "rank": 8,
+      "template": "User <*> logged in from <NUM>.<NUM>.<NUM>.<NUM>",
+      "count": 1097
+    },
+    {
+      "rank": 9,
+      "template": "Request <*> <*> completed in <NUM>ms status <NUM>",
+      "count": 1061
+    },
+    {
+      "rank": 10,
+      "template": "CPU load <NUM>% on core <NUM>",
+      "count": 1037
+    }
+  ],
+  "tuning": [
+    {
+      "sim_th": 0.3,
+      "n_templates": 13
+    },
+    {
+      "sim_th": 0.4,
+      "n_templates": 13
+    },
+    {
+      "sim_th": 0.5,
+      "n_templates": 13
+    },
+    {
+      "sim_th": 0.6,
+      "n_templates": 13
+    },
+    {
+      "sim_th": 0.7,
+      "n_templates": 13
+    },
+    {
+      "sim_th": 0.8,
+      "n_templates": 13
+    }
+  ],
+  "selected_sim_th": 0.5
+}
