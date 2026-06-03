@@ -12,10 +12,18 @@ aiops_lekimdung/
 │   │   ├── SUBMIT.md              # Nộp bài ngày 1
 │   │   └── images/                # Ảnh viết tay knowledge check (5 trang)
 │   │
-│   └── d2/                        ← Assignment ngày 2
-│       ├── assignment.ipynb       # Notebook: Drain3 log parsing, anomaly detection
-│       ├── SUBMIT.md              # Nộp bài ngày 2 (plots + logs + reflection)
-│       └── images/                # Plots + drain output JSON + ảnh KC (upload sau)
+│   ├── d2/                        ← Assignment ngày 2
+│   │   ├── assignment.ipynb       # Notebook: Drain3 log parsing, anomaly detection
+│   │   ├── SUBMIT.md              # Nộp bài ngày 2 (plots + logs + reflection)
+│   │   └── images/                # Plots + drain output JSON + ảnh KC
+│   │
+│   └── d3/                        ← Assignment ngày 3
+│       ├── pipeline.py            # Mock streaming pipeline + rolling features
+│       ├── cost_model.py          # Cost estimate build vs buy
+│       ├── architecture.md        # E2E observability data layer
+│       ├── ADR-001.md             # Kafka vs direct push decision
+│       ├── features.json          # Output từ pipeline.py
+│       └── SUBMIT.md              # Nộp bài ngày 3
 │
 └── README.md
 ```
@@ -35,3 +43,11 @@ aiops_lekimdung/
 3. Template count time series & anomaly detection
 4. New template detection signal
 5. Metric vs Log — kết hợp cho root cause analysis
+
+## Week 1 - Day 3 — Data Layer Architecture + Observability Pipeline
+
+1. Three pillars of observability: metric, log, trace
+2. Mock streaming pipeline: producer → queue → consumer → features
+3. E2E architecture cho payment service anomaly detection
+4. Cost model cho Small / Medium / Large scale
+5. ADR: chọn Kafka thay direct push
