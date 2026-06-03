@@ -13,6 +13,8 @@
 |---|---|
 | `pipeline.py` | Mock streaming pipeline: producer doc CSV, consumer tinh rolling features, output `features.json` |
 | `architecture.md` | So do E2E data layer cho payment service anomaly detection |
+| `architecture.png` | Anh architecture diagram dung de nop bai |
+| `generate_architecture_png.py` | Script sinh lai `architecture.png` neu can chinh sua |
 | `cost_model.py` | Estimate monthly cost cho Small / Medium / Large va so sanh build vs buy |
 | `ADR-001.md` | Architecture Decision Record: Kafka vs direct push |
 | `features.json` | Output sau khi chay pipeline |
@@ -20,6 +22,8 @@
 ---
 
 ## Architecture Diagram
+
+![Architecture Diagram](architecture.png)
 
 ```mermaid
 flowchart LR
@@ -66,6 +70,14 @@ Neu chua co file NAB `realKnownCause/machine_temperature_system_failure.csv`, sc
 
 Output duoc ghi ra `features.json`.
 
+Ket qua voi du lieu hien tai:
+
+```text
+Input rows emitted     : 22,695
+Feature rows generated : 22,695
+Anomaly signals        : 7
+```
+
 ---
 
 ## Cost Estimate
@@ -107,7 +119,7 @@ Tuy nhien, em van nen instrument bang OpenTelemetry ngay tu dau de tranh vendor 
 ## Checklist
 
 - [x] `pipeline.py` mock streaming pipeline
-- [x] `architecture.md` E2E data layer
+- [x] `architecture.md` va `architecture.png` E2E data layer
 - [x] `cost_model.py` cost model for 3 scale tiers
 - [x] `ADR-001.md` theo format Michael Nygard
 - [x] `SUBMIT.md` reflection

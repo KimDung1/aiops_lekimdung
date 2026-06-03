@@ -21,6 +21,8 @@ aiops_lekimdung/
 │       ├── pipeline.py            # Mock streaming pipeline + rolling features
 │       ├── cost_model.py          # Cost estimate build vs buy
 │       ├── architecture.md        # E2E observability data layer
+│       ├── architecture.png       # Architecture diagram image
+│       ├── generate_architecture_png.py # Script tạo architecture.png
 │       ├── ADR-001.md             # Kafka vs direct push decision
 │       ├── features.json          # Output từ pipeline.py
 │       └── SUBMIT.md              # Nộp bài ngày 3

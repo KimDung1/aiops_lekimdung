@@ -1,5 +1,7 @@
 # W1-D3 Architecture: Payment Service Anomaly Detection
 
+![Architecture Diagram](architecture.png)
+
 ## Use Case
 
 Detect abnormal latency, error rate, and dependency failures in a payment service. The system should alert quickly from metrics, then support root-cause investigation with traces and logs.
