@@ -35,6 +35,17 @@ aiops_lekimdung/
 │       ├── requirements.txt             # Dependencies
 │       └── W1-individual-lab.md         # Đề bài lab cá nhân
 │
+├── w2/
+│   └── d1/                              # Alert Correlation - từ noise sang signal
+│       ├── assignment.ipynb             # Notebook chạy correlation pipeline
+│       ├── correlate.py                 # Session window + topology-aware correlator
+│       ├── SUBMIT.md                    # Reflection và EOD checkpoint
+│       ├── dataset/
+│       │   ├── alerts_sample.jsonl      # 20 alert đầu vào
+│       │   └── services.json            # Service topology GeekShop
+│       └── results/
+│           └── cluster_summary.json     # Output cluster summary
+│
 └── README.md
 ```
 
@@ -68,3 +79,10 @@ aiops_lekimdung/
 2. Rule-based anomaly detection cho `memory_leak`, `traffic_spike`, `dependency_timeout`
 3. Ghi alert ra `alerts.jsonl` theo định dạng JSON Lines
 4. `DESIGN.md` mô tả approach, thresholds, sliding window và cooldown
+
+## Week 2 - Day 1 - Alert Correlation
+
+1. Dedup bằng fingerprint `service|metric|severity`
+2. Session window với `gap_sec = 120`
+3. Topology-aware grouping với `max_hop = 1`
+4. Output `results/cluster_summary.json`: 20 alert → 3 cluster, reduction ratio 0.85
