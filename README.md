@@ -46,7 +46,7 @@ aiops_lekimdung/
 │       └── results/
 │           └── cluster_summary.json     # Output cluster summary
 │   │
-│   └── d2/                              # RCA - graph, temporal, retrieval
+│   ├── d2/                              # RCA - graph, temporal, retrieval
 │       ├── assignment.ipynb             # Notebook chạy RCA pipeline
 │       ├── rca.py                       # Graph traversal + retrieval classifier
 │       ├── FINDINGS.md                  # RCA analysis
@@ -57,6 +57,13 @@ aiops_lekimdung/
 │       │   └── incidents_history.json   # Incident catalog
 │       └── results/
 │           └── rca_output.json          # Output RCA
+│   │
+│   └── d3/                              # Model Serving - production API
+│       ├── serve.py                     # FastAPI service
+│       ├── DESIGN.md                    # Serving design
+│       ├── SUBMIT.md                    # EOD checkpoint
+│       ├── requirements.txt             # FastAPI/Uvicorn dependencies
+│       └── sample_request.json          # 20-alert request body for curl
 │
 └── README.md
 ```
@@ -105,3 +112,10 @@ aiops_lekimdung/
 2. Retrieval từ `incidents_history.json` để gán class và action
 3. Output `results/rca_output.json`: 3 cluster analyzed
 4. Cluster chính chọn `payment-svc` / `connection_pool_exhaustion`
+
+## Week 2 - Day 3 - Model Serving
+
+1. FastAPI service exposes `/healthz`, `/readyz`, `/version`, and `/incident`
+2. `/incident` chains real D1 correlation + D2 RCA
+3. Latency middleware adds `X-Response-Time-Ms`
+4. Measured with 20-alert dataset: sequential p50 1.69ms, p99 2.263ms
