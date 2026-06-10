@@ -1,0 +1,79 @@
+{
+  "clusters_analyzed": 3,
+  "results": [
+    {
+      "cluster_id": "c-001-000",
+      "graph_top3": [
+        [
+          "payment-svc",
+          1.0
+        ],
+        [
+          "checkout-svc",
+          0.84
+        ],
+        [
+          "cart-svc",
+          0.68
+        ]
+      ],
+      "root_cause": "payment-svc",
+      "class": "connection_pool_exhaustion",
+      "confidence": 0.95,
+      "actions": [
+        "Rollback v2.6. Add max_idle_time + leak detection. Increase pool 50 → 100 cushion."
+      ],
+      "reasoning": "payment-svc ranked first because it is deep in the dependency graph, has an early alert in the cluster, and matches retrieved incidents ['INC-2025-09-05', 'INC-2025-11-08', 'INC-2026-01-04'].",
+      "similar_incidents": [
+        "INC-2025-09-05",
+        "INC-2025-11-08",
+        "INC-2026-01-04"
+      ],
+      "method": "graph+retrieval"
+    },
+    {
+      "cluster_id": "c-001-001",
+      "graph_top3": [
+        [
+          "recommender-svc",
+          1.0
+        ]
+      ],
+      "root_cause": "recommender-svc",
+      "class": "memory_leak",
+      "confidence": 0.95,
+      "actions": [
+        "Patch leak; rollback v3.0 trong khi chờ. Add gc.collect() trong handler."
+      ],
+      "reasoning": "recommender-svc ranked first because it is deep in the dependency graph, has an early alert in the cluster, and matches retrieved incidents ['INC-2025-08-02', 'INC-2025-10-28', 'INC-2026-03-07'].",
+      "similar_incidents": [
+        "INC-2025-08-02",
+        "INC-2025-10-28",
+        "INC-2026-03-07"
+      ],
+      "method": "graph+retrieval"
+    },
+    {
+      "cluster_id": "c-001-002",
+      "graph_top3": [
+        [
+          "search-svc",
+          1.0
+        ]
+      ],
+      "root_cause": "search-svc",
+      "class": "other",
+      "confidence": 0.95,
+      "actions": [
+        "Pre-warm cache trên health check. Tăng warmup quota."
+      ],
+      "reasoning": "search-svc ranked first because it is deep in the dependency graph, has an early alert in the cluster, and matches retrieved incidents ['INC-2026-05-25', 'INC-2026-01-29', 'INC-2025-09-21'].",
+      "similar_incidents": [
+        "INC-2026-05-25",
+        "INC-2026-01-29",
+        "INC-2025-09-21"
+      ],
+      "method": "graph+retrieval"
+    }
+  ]
+}

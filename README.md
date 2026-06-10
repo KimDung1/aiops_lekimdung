@@ -36,7 +36,7 @@ aiops_lekimdung/
 │       └── W1-individual-lab.md         # Đề bài lab cá nhân
 │
 ├── w2/
-│   └── d1/                              # Alert Correlation - từ noise sang signal
+│   ├── d1/                              # Alert Correlation - từ noise sang signal
 │       ├── assignment.ipynb             # Notebook chạy correlation pipeline
 │       ├── correlate.py                 # Session window + topology-aware correlator
 │       ├── SUBMIT.md                    # Reflection và EOD checkpoint
@@ -45,6 +45,18 @@ aiops_lekimdung/
 │       │   └── services.json            # Service topology GeekShop
 │       └── results/
 │           └── cluster_summary.json     # Output cluster summary
+│   │
+│   └── d2/                              # RCA - graph, temporal, retrieval
+│       ├── assignment.ipynb             # Notebook chạy RCA pipeline
+│       ├── rca.py                       # Graph traversal + retrieval classifier
+│       ├── FINDINGS.md                  # RCA analysis
+│       ├── SUBMIT.md                    # EOD checkpoint
+│       ├── dataset/
+│       │   ├── alerts_sample.jsonl      # Raw alerts
+│       │   ├── services.json            # Service topology
+│       │   └── incidents_history.json   # Incident catalog
+│       └── results/
+│           └── rca_output.json          # Output RCA
 │
 └── README.md
 ```
@@ -86,3 +98,10 @@ aiops_lekimdung/
 2. Session window với `gap_sec = 120`
 3. Topology-aware grouping với `max_hop = 1`
 4. Output `results/cluster_summary.json`: 20 alert → 3 cluster, reduction ratio 0.85
+
+## Week 2 - Day 2 - RCA
+
+1. Graph + temporal scorer rank top-3 root cause candidates
+2. Retrieval từ `incidents_history.json` để gán class và action
+3. Output `results/rca_output.json`: 3 cluster analyzed
+4. Cluster chính chọn `payment-svc` / `connection_pool_exhaustion`
