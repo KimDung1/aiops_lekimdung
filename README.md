@@ -65,6 +65,15 @@ aiops_lekimdung/
 │       ├── requirements.txt             # FastAPI/Uvicorn dependencies
 │       └── sample_request.json          # 20-alert request body for curl
 │
+├── w3/
+│   └── d1/                              # SLO, error budget, burn-rate alerting
+│       ├── baseline.json                # Baseline SLI từ synthetic logs
+│       ├── slo_spec.yaml                # 3 service SLI/SLO/budget specs
+│       ├── burn_rate_alerts.yaml        # 9 MWMBR Prometheus rules
+│       ├── validation_report.json       # MWMBR vs static validation
+│       ├── DESIGN.md                    # Defend SLO decisions
+│       └── SUBMIT.md                    # Reflection và validation summary
+│
 └── README.md
 ```
 
@@ -119,3 +128,10 @@ aiops_lekimdung/
 2. `/incident` chains real D1 correlation + D2 RCA
 3. Latency middleware adds `X-Response-Time-Ms`
 4. Measured with 20-alert dataset: sequential p50 1.69ms, p99 2.263ms
+
+## Week 3 - Day 1 - SLO and Burn-Rate Alerting
+
+1. Defined SLI/SLO/error budget for frontend, API, and database
+2. Added 9 Prometheus multi-window multi-burn-rate rules
+3. Validation result: 86.4% noise reduction, 0 false negatives
+4. MWMBR reduced false-positive pages from 19 to 0

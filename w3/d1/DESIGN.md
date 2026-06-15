@@ -1,0 +1,21 @@
+# DESIGN - W3-D1 SLO, Error Budget, Burn-Rate Alerting
+
+## 1. SLI choice cho frontend
+
+Tôi chọn một composite user-experience SLI: `dom_ready_ms < 3000`, không có `js_error`, và không có `network_error`. Đây là lựa chọn gần user pain nhất vì một page chỉ được tính good khi vừa render đủ nhanh vừa không lỗi JavaScript/network. Baseline có `518,400` RUM events trong 3 ngày, tương đương `172,800` events/day; success rate là `98.6103%`, fail rate `1.3897%`, và DOM-ready p99 `1430ms`. Tôi không chọn page-load time riêng vì trang có thể nhanh nhưng JavaScript hỏng. Tôi không chọn DOM-ready riêng vì nó bỏ sót network error và JS crash. JS error rate riêng cũng không phản ánh trang chậm, còn network error riêng bỏ qua lỗi frontend runtime. Composite SLI nghiêm hơn nhưng proportional với trải nghiệm hoàn chỉnh. Target frontend là `99%`, cho phép `51,840` bad events/tháng trên khoảng `5,184,000` RUM events, tương đương khoảng `432` phút nếu lỗi xảy ra toàn phần.
+
+## 2. SLO target cho API
+
+Tôi chọn API target `99.9%` trong 30 ngày. Baseline có `2,073,780` request trong 3 ngày, `691,260` request/day, system fail rate `0.3488%`; nếu nhìn riêng lỗi 5xx/429 thì availability hiện tại khoảng `99.6512%`. Strict good-event success rate là `97.6318%` vì denominator vẫn chứa user-caused 4xx và request quá latency threshold. Target `99%` quá lỏng cho e-commerce checkout: budget tháng sẽ khoảng `207,378` failures và khó tạo áp lực reliability. Target `99.99%` chỉ cho khoảng `2,074` failures/tháng, đòi multi-AZ và automation mạnh hơn mức stack 4 API instance hiện tại. `99.9%` cho budget `20,738` failures/tháng và khoảng `43` phút downtime-equivalent, đủ tham vọng nhưng vẫn có chỗ cho deploy và recovery. Baseline chưa đạt target trên cửa sổ incident-heavy 3 ngày; đó là tín hiệu cần reliability work, không phải lý do hạ SLO ngay xuống mức hiện tại.
+
+## 3. Latency threshold p99
+
+Tôi chọn `500ms` làm good-event cutoff cho API, đồng thời dùng p99 làm statistic theo dõi. Phân phối 3 ngày là: p50 `45ms`, p90 `86ms`, p95 `104ms`, p99 `156ms`, p99.9 `394ms`; `99.568%` request dưới `200ms` và `99.94%` dưới `500ms`. Cutoff `200ms` nằm khá gần p99 bình thường và sẽ biến variance nhỏ hoặc GC/network jitter thành bad event, làm SLI nhạy quá mức. Cutoff `1s` lại quá rộng cho API tương tác, có thể che một degradation 5-6 lần baseline. `500ms` cao hơn p99.9 baseline một khoảng hợp lý nhưng vẫn thấp hơn ngưỡng user bắt đầu cảm nhận checkout chậm rõ rệt. Trong incident, generator tăng latency mạnh nên cutoff này vẫn phát hiện user pain. Tôi không dùng average latency vì average che tail; p99 phù hợp hơn cho user-facing service khi một nhóm nhỏ request chậm vẫn có thể đại diện cho khách hàng thật.
+
+## 4. Loại 4xx khỏi error count
+
+Tôi loại 4xx khỏi system error count, trừ `429`. Các status như 400, 401, 403, 404 thường do request sai, credential thiếu, bot hoặc scraper; service có thể xử lý hoàn toàn đúng nhưng vẫn trả 4xx. Nếu đếm chúng là bad system events, SLI sẽ giảm dù người dùng hợp lệ không gặp lỗi. Trong `2,073,780` access-log events, non-429 4xx theo endpoint chỉ khoảng `1.976%` đến `2.038%`: `/api/cart` cao nhất `2.038%`, `/api/checkout` `2.011%`, `/api/orders` `2.015%`, `/api/products` `2.016%`, `/api/user` `1.976%`. Không endpoint nào vượt 5%, nhưng tổng volume vẫn đủ lớn để kéo strict success rate xuống `97.6318%`. Tôi vẫn tính `429` là failure vì hệ thống chủ động từ chối traffic; tỷ lệ 429 quanh `0.049-0.053%` theo endpoint. Việc tách này giúp SLO đo reliability phía service thay vì đo chất lượng request đầu vào.
+
+## 5. MWMBR tuning
+
+Tôi giữ Google default cho tier 2 (`6h/30m`, burn `6`) và tier 3 (`3d/6h`, burn `1`), nhưng tune riêng API tier 1 từ `14.4` xuống `10` trên cùng cửa sổ `1h/5m`. Lần chạy default parse đủ `9` rules và đạt noise reduction `86.4%`, `0 FN`, nhưng MTTD delta đúng `60s`, sát biên acceptance. Sau khi giảm threshold API tier 1, validator vẫn cho MWMBR `3` firing interval, `3 TP`, `0 FP`, `0 FN`, nhưng MTTD p50 giảm từ `60s` xuống `0s`. Static baseline vẫn có `22` interval, `3 TP`, `19 FP`, `0 FN`; vì vậy noise reduction giữ nguyên `86.4%` và verdict `pass`. Tôi không giảm tiếp dưới `10` vì không còn lợi ích MTTD trên dữ liệu 1-minute bucket, trong khi threshold thấp hơn có thể tăng false page ở production. Đây là tuning dựa trên replay evidence chứ không thay đổi tùy ý.

@@ -1,0 +1,123 @@
+groups:
+  - name: frontend-slo
+    rules:
+      - alert: FrontendSLOBurnRateTier1
+        expr: |
+          (sum(rate(frontend_rum_fail_total[1h])) / sum(rate(frontend_rum_total[1h]))) / (1 - 0.99) >= 14.4
+          AND
+          (sum(rate(frontend_rum_fail_total[5m])) / sum(rate(frontend_rum_total[5m]))) / (1 - 0.99) >= 14.4
+        labels:
+          severity: page
+          tier: "1"
+          service: frontend
+        annotations:
+          summary: "Frontend burns >=14.4x budget over 1h and 5m"
+          runbook: "https://runbooks.example.com/frontend-slo"
+
+      - alert: FrontendSLOBurnRateTier2
+        expr: |
+          (sum(rate(frontend_rum_fail_total[6h])) / sum(rate(frontend_rum_total[6h]))) / (1 - 0.99) >= 6
+          AND
+          (sum(rate(frontend_rum_fail_total[30m])) / sum(rate(frontend_rum_total[30m]))) / (1 - 0.99) >= 6
+        labels:
+          severity: page
+          tier: "2"
+          service: frontend
+        annotations:
+          summary: "Frontend burns >=6x budget over 6h and 30m"
+          runbook: "https://runbooks.example.com/frontend-slo"
+
+      - alert: FrontendSLOBurnRateTier3
+        expr: |
+          (sum(rate(frontend_rum_fail_total[3d])) / sum(rate(frontend_rum_total[3d]))) / (1 - 0.99) >= 1
+          AND
+          (sum(rate(frontend_rum_fail_total[6h])) / sum(rate(frontend_rum_total[6h]))) / (1 - 0.99) >= 1
+        labels:
+          severity: ticket
+          tier: "3"
+          service: frontend
+        annotations:
+          summary: "Frontend sustained error-budget burn"
+          runbook: "https://runbooks.example.com/frontend-slo"
+
+  - name: api-slo
+    rules:
+      - alert: ApiSLOBurnRateTier1
+        expr: |
+          (sum(rate(http_requests_total{status=~"5..|429"}[1h])) / sum(rate(http_requests_total[1h]))) / (1 - 0.999) >= 10
+          AND
+          (sum(rate(http_requests_total{status=~"5..|429"}[5m])) / sum(rate(http_requests_total[5m]))) / (1 - 0.999) >= 10
+        labels:
+          severity: page
+          tier: "1"
+          service: api
+        annotations:
+          summary: "API burns >=10x budget over 1h and 5m"
+          runbook: "https://runbooks.example.com/api-slo"
+
+      - alert: ApiSLOBurnRateTier2
+        expr: |
+          (sum(rate(http_requests_total{status=~"5..|429"}[6h])) / sum(rate(http_requests_total[6h]))) / (1 - 0.999) >= 6
+          AND
+          (sum(rate(http_requests_total{status=~"5..|429"}[30m])) / sum(rate(http_requests_total[30m]))) / (1 - 0.999) >= 6
+        labels:
+          severity: page
+          tier: "2"
+          service: api
+        annotations:
+          summary: "API burns >=6x budget over 6h and 30m"
+          runbook: "https://runbooks.example.com/api-slo"
+
+      - alert: ApiSLOBurnRateTier3
+        expr: |
+          (sum(rate(http_requests_total{status=~"5..|429"}[3d])) / sum(rate(http_requests_total[3d]))) / (1 - 0.999) >= 1
+          AND
+          (sum(rate(http_requests_total{status=~"5..|429"}[6h])) / sum(rate(http_requests_total[6h]))) / (1 - 0.999) >= 1
+        labels:
+          severity: ticket
+          tier: "3"
+          service: api
+        annotations:
+          summary: "API sustained error-budget burn"
+          runbook: "https://runbooks.example.com/api-slo"
+
+  - name: db-slo
+    rules:
+      - alert: DatabaseSLOBurnRateTier1
+        expr: |
+          (sum(rate(db_query_fail_total[1h])) / sum(rate(db_query_total[1h]))) / (1 - 0.9995) >= 14.4
+          AND
+          (sum(rate(db_query_fail_total[5m])) / sum(rate(db_query_total[5m]))) / (1 - 0.9995) >= 14.4
+        labels:
+          severity: page
+          tier: "1"
+          service: db
+        annotations:
+          summary: "DB burns >=14.4x budget over 1h and 5m"
+          runbook: "https://runbooks.example.com/db-slo"
+
+      - alert: DatabaseSLOBurnRateTier2
+        expr: |
+          (sum(rate(db_query_fail_total[6h])) / sum(rate(db_query_total[6h]))) / (1 - 0.9995) >= 6
+          AND
+          (sum(rate(db_query_fail_total[30m])) / sum(rate(db_query_total[30m]))) / (1 - 0.9995) >= 6
+        labels:
+          severity: page
+          tier: "2"
+          service: db
+        annotations:
+          summary: "DB burns >=6x budget over 6h and 30m"
+          runbook: "https://runbooks.example.com/db-slo"
+
+      - alert: DatabaseSLOBurnRateTier3
+        expr: |
+          (sum(rate(db_query_fail_total[3d])) / sum(rate(db_query_total[3d]))) / (1 - 0.9995) >= 1
+          AND
+          (sum(rate(db_query_fail_total[6h])) / sum(rate(db_query_total[6h]))) / (1 - 0.9995) >= 1
+        labels:
+          severity: ticket
+          tier: "3"
+          service: db
+        annotations:
+          summary: "DB sustained error-budget burn"
+          runbook: "https://runbooks.example.com/db-slo"
