@@ -1,0 +1,20 @@
+[
+  {
+    "name": "EdgeWafHighLatency",
+    "service": "edge-waf",
+    "severity": "critical",
+    "fire_ts": "2026-06-18T01:49:19.759Z",
+    "metric": "http_request_latency_ms",
+    "value": 1836.621,
+    "threshold": 500
+  },
+  {
+    "name": "EdgeWafCpuSaturation",
+    "service": "edge-waf",
+    "severity": "warning",
+    "fire_ts": "2026-06-18T01:49:19.809Z",
+    "metric": "worker_busy_ratio",
+    "value": 1.0,
+    "threshold": 0.9
+  }
+]

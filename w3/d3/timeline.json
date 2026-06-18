@@ -1,0 +1,57 @@
+[
+  {
+    "ts": "2026-06-18T01:49:17.803Z",
+    "source": "experiment",
+    "event": "steady-state check started"
+  },
+  {
+    "ts": "2026-06-18T01:49:17.823Z",
+    "source": "probe",
+    "event": "safe regex latency=0.097ms status=pass"
+  },
+  {
+    "ts": "2026-06-18T01:49:17.853Z",
+    "source": "deploy",
+    "event": "candidate WAF rule loaded into isolated worker"
+  },
+  {
+    "ts": "2026-06-18T01:49:17.883Z",
+    "source": "inject",
+    "event": "adversarial query submitted length=24"
+  },
+  {
+    "ts": "2026-06-18T01:49:19.639Z",
+    "source": "service",
+    "event": "request completed latency=1836.621ms"
+  },
+  {
+    "ts": "2026-06-18T01:49:19.759Z",
+    "source": "pipeline",
+    "event": "latency threshold 500ms exceeded"
+  },
+  {
+    "ts": "2026-06-18T01:49:19.859Z",
+    "source": "pipeline",
+    "event": "incident cluster created for edge-waf"
+  },
+  {
+    "ts": "2026-06-18T01:49:19.939Z",
+    "source": "pipeline",
+    "event": "RCA selected edge-waf confidence=0.92"
+  },
+  {
+    "ts": "2026-06-18T01:49:20.009Z",
+    "source": "rollback",
+    "event": "candidate WAF rule disabled"
+  },
+  {
+    "ts": "2026-06-18T01:49:20.059Z",
+    "source": "probe",
+    "event": "safe regex latency returned below 10ms"
+  },
+  {
+    "ts": "2026-06-18T01:49:20.109Z",
+    "source": "experiment",
+    "event": "reproduction ended and child process cleaned up"
+  }
+]

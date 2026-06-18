@@ -1,0 +1,16 @@
+{
+  "root_service": "edge-waf",
+  "root_cause_class": "catastrophic_backtracking",
+  "confidence": 0.92,
+  "mttd_seconds": 1.957,
+  "evidence": [
+    "safe-regex latency 0.097ms",
+    "evil-regex latency 1836.621ms",
+    "single hot-path worker became busy without a 5xx response"
+  ],
+  "gaps": [
+    "RCA cannot identify the exact regex rule ID without deploy metadata",
+    "An error-rate-only detector would miss slow HTTP 200 responses"
+  ],
+  "execution_note": "Local minimal reproduction; the starter pack does not include a live AIOps API endpoint."
+}

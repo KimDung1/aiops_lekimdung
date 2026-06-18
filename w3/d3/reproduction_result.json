@@ -1,0 +1,18 @@
+{
+  "outage": "Cloudflare WAF regex 2019",
+  "failure_mode": "catastrophic_backtracking",
+  "input_length": 24,
+  "baseline": {
+    "matched": true,
+    "elapsed_ms": 0.097,
+    "timed_out": false
+  },
+  "injected": {
+    "matched": false,
+    "elapsed_ms": 1836.621,
+    "timed_out": false
+  },
+  "slowdown_ratio": 18934.24,
+  "detected": true,
+  "detection_threshold_ms": 500
+}

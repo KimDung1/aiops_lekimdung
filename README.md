@@ -74,7 +74,7 @@ aiops_lekimdung/
 │       ├── DESIGN.md                    # Defend SLO decisions
 │       └── SUBMIT.md                    # Reflection và validation summary
 │   │
-│   └── d2/                              # Chaos engineering pipeline validation
+│   ├── d2/                              # Chaos engineering pipeline validation
 │       ├── experiments.yaml             # Catalog 10 chaos experiments
 │       ├── chaos_runner.py              # Real command dispatcher + simulation adapter
 │       ├── chaos_results.json           # Per-experiment scored results
@@ -85,6 +85,18 @@ aiops_lekimdung/
 │       ├── synthetic_probe.sh           # External probe script
 │       ├── requirements.txt             # PyYAML dependency
 │       └── SUBMIT.md                    # Reflection and summary
+│   │
+│   └── d3/                              # Outage reproduction and postmortem
+│       ├── reproduction/                # Cloudflare regex minimal reproduction
+│       ├── timeline.json                # 11 measured UTC events
+│       ├── alerts_observed.json         # Observed pipeline alerts
+│       ├── rca_observed.json            # RCA result and evidence gaps
+│       ├── reproduction_result.json     # Regex latency measurements
+│       ├── postmortem.md                # Blameless Google-style postmortem
+│       ├── ADR.md                       # WAF rule safety architecture decision
+│       ├── cost_model.py                # ROI/payback model + 3 examples
+│       ├── SPEC.md                      # W3 mini-platform master spec
+│       └── SUBMIT.md                    # Reflection and cost verdict
 │
 └── README.md
 ```
@@ -155,3 +167,11 @@ aiops_lekimdung/
 3. Reproducible simulation result: detected 8/10, RCA correct 7/8
 4. Identified detector gaps for clock skew/meta-monitoring and a DNS topology gap
 5. Simulation mode is documented because the official starter pack omits the runnable service stack
+
+## Week 3 - Day 3 - Postmortem and Platform Decisions
+
+1. Reproduced Cloudflare-style catastrophic regex backtracking locally
+2. Measured latency increase from 0.097ms to 1836.621ms (~18,934x)
+3. Produced an 11-event timeline, alerts, RCA evidence, and blameless postmortem
+4. ADR requires ReDoS scanning, isolated shadow evaluation, and staged canary rollout
+5. GeekShop cost model: ROI 2.0, payback 0.5 month, verdict `worth_it`
