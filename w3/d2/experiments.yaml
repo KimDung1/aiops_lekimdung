@@ -1,0 +1,112 @@
+version: 1
+mode_note: "Simulation evidence is used locally because the starter pack does not include the Docker stack or chaos binaries."
+experiments:
+  - id: 1
+    name: payment_latency
+    fault_type: latency
+    target: payment-svc
+    hypothesis: "During 500ms network delay, latency anomaly fires within 30s and RCA identifies payment-svc while probe pass-rate remains above 70%."
+    blast_radius: {target: "1 payment-svc instance", duration_seconds: 60, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 50% for 20s", method: "tc qdisc del dev eth0 root"}
+    measurement: {metrics: [probe_pass_rate, p99_latency, detector_alerts, rca_root_service], capture_window_seconds: 300}
+    ground_truth: {expected_root_service: payment-svc, expected_fault_class: latency}
+    simulation: {detected: true, mttd_seconds: 28, rca_service: payment-svc, probe_pass_rate: 0.78, false_alarms: 0, evidence: "payment p99 rose from 180ms to 735ms before checkout latency increased"}
+
+  - id: 2
+    name: payment_packet_loss
+    fault_type: network_loss
+    target: payment-svc
+    hypothesis: "With 30% packet loss for 60s, error-rate detector fires within 30s and topology-aware RCA picks payment-svc."
+    blast_radius: {target: "1 payment-svc instance", duration_seconds: 60, traffic_percent: 50}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 60% for 20s", method: "tc qdisc del dev eth0 root"}
+    measurement: {metrics: [probe_pass_rate, payment_error_rate, retry_count, rca_root_service], capture_window_seconds: 300}
+    ground_truth: {expected_root_service: payment-svc, expected_fault_class: network_loss}
+    simulation: {detected: true, mttd_seconds: 18, rca_service: payment-svc, probe_pass_rate: 0.74, false_alarms: 0, evidence: "payment error rate reached 29%; checkout errors followed 6s later"}
+
+  - id: 3
+    name: inventory_pod_kill
+    fault_type: availability
+    target: inventory-svc
+    hypothesis: "Repeated inventory container termination produces an availability alert within 20s and RCA identifies inventory-svc."
+    blast_radius: {target: "1 inventory-svc instance", duration_seconds: 60, traffic_percent: 25}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 80% for 20s", method: "docker start inventory-svc"}
+    measurement: {metrics: [probe_pass_rate, inventory_up, inventory_5xx_rate, rca_root_service], capture_window_seconds: 240}
+    ground_truth: {expected_root_service: inventory-svc, expected_fault_class: availability}
+    simulation: {detected: true, mttd_seconds: 12, rca_service: inventory-svc, probe_pass_rate: 0.88, false_alarms: 0, evidence: "inventory up dropped to 0 and checkout stock calls returned 503"}
+
+  - id: 4
+    name: api_cpu_saturation
+    fault_type: cpu_saturation
+    target: api-gateway
+    hypothesis: "At 90% CPU, user-facing latency crosses 500ms and the correlated cascade is rooted at api-gateway."
+    blast_radius: {target: "1 api-gateway instance", duration_seconds: 90, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "p99_latency > 3000ms for 20s", method: "pumba stop api-gateway"}
+    measurement: {metrics: [probe_pass_rate, cpu_percent, p99_latency, downstream_timeouts], capture_window_seconds: 360}
+    ground_truth: {expected_root_service: api-gateway, expected_fault_class: cpu_saturation}
+    simulation: {detected: true, mttd_seconds: 35, rca_service: api-gateway, probe_pass_rate: 0.82, false_alarms: 0, evidence: "gateway CPU hit 91% and latency increased across all downstream calls"}
+
+  - id: 5
+    name: payment_db_memory
+    fault_type: memory
+    target: payment-db
+    hypothesis: "Filling payment-db memory to 95% causes connection-pool pressure, detection within 60s, and RCA picks payment-db."
+    blast_radius: {target: "payment-db container", duration_seconds: 90, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "db_available_memory < 3% for 10s", method: "docker restart payment-db"}
+    measurement: {metrics: [probe_pass_rate, db_memory_percent, db_connections, payment_pool_used], capture_window_seconds: 420}
+    ground_truth: {expected_root_service: payment-db, expected_fault_class: memory}
+    simulation: {detected: true, mttd_seconds: 42, rca_service: payment-db, probe_pass_rate: 0.71, false_alarms: 0, evidence: "DB memory reached 95%; payment pool reached 50/50 after 31s"}
+
+  - id: 6
+    name: auth_clock_skew
+    fault_type: time_skew
+    target: auth-svc
+    hypothesis: "A +60s clock skew causes JWT validation failures and should be detected with auth-svc as root within 60s."
+    blast_radius: {target: "1 auth-svc instance", duration_seconds: 60, traffic_percent: 25}
+    rollback: {automatic: true, trigger_when: "auth_success_rate < 80% for 20s", method: "docker restart auth-svc"}
+    measurement: {metrics: [probe_pass_rate, jwt_error_rate, clock_offset_seconds, rca_root_service], capture_window_seconds: 300}
+    ground_truth: {expected_root_service: auth-svc, expected_fault_class: time_skew}
+    simulation: {detected: false, mttd_seconds: null, rca_service: null, probe_pass_rate: 0.96, false_alarms: 0, evidence: "JWT errors increased but stayed below the generic 5xx detector threshold"}
+
+  - id: 7
+    name: log_collector_disk_fill
+    fault_type: disk_fill
+    target: log-collector
+    hypothesis: "At 95% disk usage, ingestion lag should trigger meta-monitoring and RCA should identify log-collector."
+    blast_radius: {target: "log-collector volume", duration_seconds: 90, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "disk_used_percent >= 97", method: "docker exec log-collector rm -f /tmp/chaos-fill"}
+    measurement: {metrics: [probe_pass_rate, disk_used_percent, log_ingestion_lag, collector_errors], capture_window_seconds: 420}
+    ground_truth: {expected_root_service: log-collector, expected_fault_class: disk_fill}
+    simulation: {detected: false, mttd_seconds: null, rca_service: null, probe_pass_rate: 1.0, false_alarms: 0, evidence: "User probe stayed healthy; pipeline had no independent meta-monitor for ingestion lag"}
+
+  - id: 8
+    name: frontend_gateway_partition
+    fault_type: network_partition
+    target: api-gateway
+    hypothesis: "A 30s frontend-to-gateway partition causes downstream timeout alerts within 20s and RCA identifies api-gateway as the edge failure."
+    blast_radius: {target: "frontend to api-gateway link", duration_seconds: 30, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 20% for 10s", method: "iptables -F"}
+    measurement: {metrics: [probe_pass_rate, gateway_timeout_rate, frontend_network_errors, rca_root_service], capture_window_seconds: 240}
+    ground_truth: {expected_root_service: api-gateway, expected_fault_class: network_partition}
+    simulation: {detected: true, mttd_seconds: 15, rca_service: api-gateway, probe_pass_rate: 0.05, false_alarms: 0, evidence: "external probe failed immediately and frontend network errors reached 94%"}
+
+  - id: 9
+    name: dns_slow_lookup
+    fault_type: dns_latency
+    target: dns-resolver
+    hypothesis: "Adding 2s DNS latency creates intermittent timeouts; detector fires within 90s and topology should point to dns-resolver."
+    blast_radius: {target: "dns resolver proxy", duration_seconds: 90, traffic_percent: 50}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 50% for 20s", method: "toxiproxy-cli toxic remove dns-latency"}
+    measurement: {metrics: [probe_pass_rate, dns_latency, timeout_rate, rca_root_service], capture_window_seconds: 420}
+    ground_truth: {expected_root_service: dns-resolver, expected_fault_class: dns_latency}
+    simulation: {detected: true, mttd_seconds: 55, rca_service: api-gateway, probe_pass_rate: 0.69, false_alarms: 1, evidence: "timeouts were visible at gateway, but DNS was missing from the RCA dependency graph"}
+
+  - id: 10
+    name: checkout_retry_storm
+    fault_type: cascade_retry
+    target: checkout-svc
+    hypothesis: "Injecting 20% HTTP 500 at checkout amplifies retries; detector fires, but RCA must not select checkout-svc as the root."
+    blast_radius: {target: "all checkout requests", duration_seconds: 90, traffic_percent: 100}
+    rollback: {automatic: true, trigger_when: "probe_pass_rate < 30% for 30s", method: "toxiproxy-cli toxic remove checkout-errors"}
+    measurement: {metrics: [probe_pass_rate, retry_count, upstream_queue_depth, rca_root_service], capture_window_seconds: 600}
+    ground_truth: {expected_root_service: "NOT checkout-svc", expected_fault_class: cascade_retry}
+    simulation: {detected: true, mttd_seconds: 24, rca_service: payment-svc, probe_pass_rate: 0.77, false_alarms: 0, evidence: "checkout alerts were loudest, while payment queue depth changed first"}

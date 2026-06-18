@@ -66,13 +66,25 @@ aiops_lekimdung/
 │       └── sample_request.json          # 20-alert request body for curl
 │
 ├── w3/
-│   └── d1/                              # SLO, error budget, burn-rate alerting
+│   ├── d1/                              # SLO, error budget, burn-rate alerting
 │       ├── baseline.json                # Baseline SLI từ synthetic logs
 │       ├── slo_spec.yaml                # 3 service SLI/SLO/budget specs
 │       ├── burn_rate_alerts.yaml        # 9 MWMBR Prometheus rules
 │       ├── validation_report.json       # MWMBR vs static validation
 │       ├── DESIGN.md                    # Defend SLO decisions
 │       └── SUBMIT.md                    # Reflection và validation summary
+│   │
+│   └── d2/                              # Chaos engineering pipeline validation
+│       ├── experiments.yaml             # Catalog 10 chaos experiments
+│       ├── chaos_runner.py              # Real command dispatcher + simulation adapter
+│       ├── chaos_results.json           # Per-experiment scored results
+│       ├── probe.log                    # External steady-state probe evidence
+│       ├── scoreboard.txt               # Required scoreboard output
+│       ├── chaos_report.md              # Detailed experiment and gap analysis
+│       ├── baseline.json                # Steady-state hypothesis baseline
+│       ├── synthetic_probe.sh           # External probe script
+│       ├── requirements.txt             # PyYAML dependency
+│       └── SUBMIT.md                    # Reflection and summary
 │
 └── README.md
 ```
@@ -135,3 +147,11 @@ aiops_lekimdung/
 2. Added 9 Prometheus multi-window multi-burn-rate rules
 3. Validation result: 86.4% noise reduction, 0 false negatives
 4. MWMBR reduced false-positive pages from 19 to 0
+
+## Week 3 - Day 2 - Chaos Engineering
+
+1. Defined 10 hypothesis-driven chaos experiments with rollback and ground truth
+2. Implemented command dispatch for Docker, Pumba, and Toxiproxy fault types
+3. Reproducible simulation result: detected 8/10, RCA correct 7/8
+4. Identified detector gaps for clock skew/meta-monitoring and a DNS topology gap
+5. Simulation mode is documented because the official starter pack omits the runnable service stack

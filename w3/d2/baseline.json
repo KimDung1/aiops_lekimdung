@@ -1,0 +1,17 @@
+{
+  "mode": "simulated",
+  "reason": "The official starter pack does not include the 10-service Docker stack, Prometheus, Pumba, or Toxiproxy.",
+  "capture_window_seconds": 300,
+  "steady_state": {
+    "external_probe_pass_rate": 1.0,
+    "checkout_p99_ms": 180,
+    "order_success_rate": 0.998,
+    "api_error_rate": 0.002,
+    "payment_pool_used_ratio": 0.42,
+    "log_ingestion_lag_seconds": 3
+  },
+  "acceptance": {
+    "probe_pass_rate_min": 0.99,
+    "checkout_p99_ms_max": 500
+  }
+}
